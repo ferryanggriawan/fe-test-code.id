@@ -1,32 +1,73 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <v-app>
+    <v-app-bar app color="white" flat>
+      <span class="title">Code.id</span>
+
+      <v-spacer></v-spacer>
+
+      <v-btn
+        href="https://github.com/vuetifyjs/vuetify/releases/latest"
+        target="_blank"
+        text
+      >
+        <span class="mr-2">Source</span>
+        <v-icon>mdi-open-in-new</v-icon>
+      </v-btn>
+    </v-app-bar>
+
+    <v-main>
+      <v-sheet color="grey lighten-3" height="400">
+        <v-row class="fill-height" justify="center" align-content="center">
+          <v-col cols="7" class="text-center">
+            <div class="text-h6">Welcome to Code.id Image Site</div>
+            <span class="text-subtitle-1">
+              Search image to found your dream
+            </span>
+          </v-col>
+          <v-col cols="7" class="text-center">
+            <v-autocomplete
+              v-model="value"
+              :items="items"
+              item-text="author"
+              filled
+              rounded
+              prepend-inner-icon="mdi-magnify"
+            ></v-autocomplete>
+          </v-col>
+        </v-row>
+      </v-sheet>
+      <HelloWorld v-if="items.length > 0" :author="value" :listImages="items" />
+    </v-main>
+  </v-app>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import HelloWorld from "./components/HelloWorld"
 
-#nav {
-  padding: 30px;
+export default {
+  name: "App",
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+  components: {
+    HelloWorld,
+  },
 
-    &.router-link-exact-active {
-      color: #42b983;
+  data() {
+    return {
+      items: [],
+      value: "",
     }
-  }
+  },
+
+  mounted() {
+    this.browse()
+  },
+
+  methods: {
+    async browse() {
+      const datas = await this.callApi().get("/v2/list")
+
+      this.items = datas.data
+    },
+  },
 }
-</style>
+</script>
